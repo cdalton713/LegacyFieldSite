@@ -36,3 +36,74 @@
     transform: rotate(360deg);
   }
 }
+
+.ui.menu.no-margin {
+  margin-bottom: 0px;
+  margin-top: 0px;
+}
+
+.ui.list.no-margin {
+  margin-bottom: 0px;
+  margin-top: 0px;
+}
+.ui.vertical.menu.max-width {
+  width: 100%;
+}
+
+.ui.compact.grid .row:not(:first-child), .ui.grid .compact.row {
+  padding-top: 0;
+}
+.ui.compact.grid .row:not(:last-child), .ui.grid .compact.row {
+  padding-bottom: 0;
+}
+.ui.compact.grid .column:not(:first-child), .ui.grid .compact.row .column:not(:first-child), .ui.grid .compact.column {
+  padding-left: 0;
+}
+.ui.compact.grid .column:not(:last-child), .ui.grid .compact.row .column:not(:last-child), .ui.grid .compact.column {
+  padding-right: 0;
+}
+
+.container-all-padding {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.container-small-top-bottom-padding {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+
+.fill-div {
+  width: 100%;
+  height: 100%;
+}
+
+.ui.centered.grid.grid-centered {
+  text-align: center;
+}
+
+.ui.progress:last-child.no-margin {
+  margin: 0 0 0em;
+}
+
+.ui.table.no-margin {
+  margin: 0;
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+}
+
+.ui.button.retry-upload {
+  background-color: white;
+
+  
+}
+
+.ui.button.retry-upload:hover{
+  background-color: white;
+  
+}
