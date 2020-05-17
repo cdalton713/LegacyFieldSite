@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {ReactDataGrid} from "react-data-grid";
+import { ReactDataGrid } from "react-data-grid";
 import "react-data-grid/dist/react-data-grid.css";
 import { Toolbar } from "react-data-grid-addons";
 
@@ -42,8 +42,6 @@ export class MyDataGrid extends Component {
       sortDirection === "NONE"
         ? this.state.originalRows.slice(0)
         : this.state.rows.sort(comparer);
-
-
   };
 
   handleFilterChange = (filter) => (filters) => {

@@ -50,16 +50,22 @@
   width: 100%;
 }
 
-.ui.compact.grid .row:not(:first-child), .ui.grid .compact.row {
+.ui.compact.grid .row:not(:first-child),
+.ui.grid .compact.row {
   padding-top: 0;
 }
-.ui.compact.grid .row:not(:last-child), .ui.grid .compact.row {
+.ui.compact.grid .row:not(:last-child),
+.ui.grid .compact.row {
   padding-bottom: 0;
 }
-.ui.compact.grid .column:not(:first-child), .ui.grid .compact.row .column:not(:first-child), .ui.grid .compact.column {
+.ui.compact.grid .column:not(:first-child),
+.ui.grid .compact.row .column:not(:first-child),
+.ui.grid .compact.column {
   padding-left: 0;
 }
-.ui.compact.grid .column:not(:last-child), .ui.grid .compact.row .column:not(:last-child), .ui.grid .compact.column {
+.ui.compact.grid .column:not(:last-child),
+.ui.grid .compact.row .column:not(:last-child),
+.ui.grid .compact.column {
   padding-right: 0;
 }
 
@@ -74,7 +80,6 @@
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
-
 
 .fill-div {
   width: 100%;
@@ -91,19 +96,39 @@
 
 .ui.table.no-margin {
   margin: 0;
-    margin-top: 0px;
-    margin-right: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
 }
 
 .ui.button.retry-upload {
   background-color: white;
-
-  
 }
 
-.ui.button.retry-upload:hover{
+.ui.button.retry-upload:hover {
   background-color: white;
-  
+}
+
+.with-sidebar {
+  overflow: hidden;
+}
+
+.with-sidebar > * {
+  display: flex;
+  flex-wrap: nowrap;
+  margin: 0px;
+
+}
+
+.with-sidebar > * > * {
+  margin: calc(10px / 2);
+  flex-basis: 220px;
+  flex-grow: 1;
+}
+
+.with-sidebar > * > :last-child {
+  flex-basis: 0;
+  flex-grow: 999;
+  min-width: calc(50% - 10);
 }

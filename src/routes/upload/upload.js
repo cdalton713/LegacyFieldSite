@@ -17,13 +17,14 @@ import FineUploaderAzure from "fine-uploader-wrappers/azure";
 import { NumberInput, DropdownSelection } from "../../components/inputs.js";
 import { MyDataTable } from "../../components/datatable.js";
 import { Select } from "@material-ui/core";
+import { useSelector, useDispatch } from "react-redux";
 
 const uploader = new FineUploaderAzure({
   options: {
     request: {
       endpoint: "my/upload/endpoint",
     },
-  }
+  },
 });
 
 const ddOrMwd = [
@@ -41,16 +42,19 @@ export const Upload = () => {
   const handleMwdRunChange = (e, { value }) => setMwdRun(value);
   const handleDdRunChange = (e, { value }) => setDdRun(value);
 
- 
+  const selectedJob = useSelector((state) => state);
+  const dispatch = useDispatch();
+
   return (
     <div className="container-all-padding">
       <Grid stackable columns={3} centered textAlign="center">
         <Grid.Row columns={1}>
           <Grid.Column>
             <Card>
-              <Card.Content header={"MD200009"} />
+              <Card.Content header={selectedJob.well_name} />
               <Card.Content>
-                {"H&P 468"} <br /> {"WELL NAME"}
+                {selectedJob.job_id} <br /> {selectedJob.customer} <br />{" "}
+                {selectedJob.rig}
               </Card.Content>
             </Card>
             <Divider horizontal>File Uploader</Divider>
@@ -84,9 +88,9 @@ export const Upload = () => {
             <br />
             <FileUploader
               uploader={uploader}
-              ddMwd={ddMwd || ''}
-              mwdRun={mwdRun || ''}
-              ddRun={ddRun || ''}
+              ddMwd={ddMwd || ""}
+              mwdRun={mwdRun || ""}
+              ddRun={ddRun || ""}
             />
           </Grid.Column>
         </Grid.Row>
@@ -99,10 +103,12 @@ export const Upload = () => {
               title=""
               selectableRows
               selectableRowsHighlight
-              dense
+              dense={true}
               noHeader
-              subHeader
+              subHeader={false}
               subHeaderAlign={"right"}
+              deleteButton={true}
+              downloadButton={true}
             />
           </Grid.Column>
         </Grid.Row>
