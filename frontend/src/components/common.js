@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Button, Icon, Progress } from "semantic-ui-react";
+import { Button, Card, Icon, Progress } from "semantic-ui-react";
+import { useSelector } from "react-redux";
 
 export const StartUploadButton = (props) => {
-  const { color = "blue", label = "Start Upload", ...restProps } = props;
+  const { color = "blue", label = "Start Job", ...restProps } = props;
   return (
     <Button color={color} {...restProps}>
       {label}
@@ -56,4 +57,26 @@ export const IconMessage = (props) => {
   );
 };
 
-
+export const CurrentJobCard = (props) => {
+  const selectedJob = useSelector((state) => state.selectedJobReducer.data);
+  if (selectedJob == null) {
+    return (
+      <Card color={'red'} >
+        <Card.Content header={'Job Not Selected'} />
+        <Card.Content>
+          {'Please select a job to continue'}
+        </Card.Content>
+      </Card>
+    );
+  } else {
+    return (
+      <Card>
+        <Card.Content header={selectedJob.well.well_name} />
+        <Card.Content>
+          {selectedJob.job_id} <br /> {selectedJob.operator} <br />{" "}
+          {selectedJob.rig}
+        </Card.Content>
+      </Card>
+    );
+  }
+};

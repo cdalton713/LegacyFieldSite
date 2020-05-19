@@ -18,6 +18,8 @@ import { NumberInput, DropdownSelection } from "../../components/inputs.js";
 import { MyDataTable } from "../../components/datatable.js";
 import { Select } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
+import { CurrentJobCard } from "../../components/common";
+import {JobSubNavBar} from "../../components/navigation";
 
 const uploader = new FineUploaderAzure({
   options: {
@@ -32,7 +34,7 @@ const ddOrMwd = [
   { key: 2, text: "MWD", value: "MWD" },
 ];
 
-export const Upload = () => {
+export const Job = (props) => {
   const [ddMwd, setDdMWd] = useState("");
   const [mwdRun, setMwdRun] = useState("");
   const [ddRun, setDdRun] = useState("");
@@ -42,23 +44,16 @@ export const Upload = () => {
   const handleMwdRunChange = (e, { value }) => setMwdRun(value);
   const handleDdRunChange = (e, { value }) => setDdRun(value);
 
-  const selectedJob = useSelector((state) => state);
-  const dispatch = useDispatch();
-
   return (
     <div className="container-all-padding">
       <Grid stackable columns={3} centered textAlign="center">
         <Grid.Row columns={1}>
           <Grid.Column>
-            <Card>
-              <Card.Content header={selectedJob.well_name} />
-              <Card.Content>
-                {selectedJob.job_id} <br /> {selectedJob.customer} <br />{" "}
-                {selectedJob.rig}
-              </Card.Content>
-            </Card>
-            <Divider horizontal>File Uploader</Divider>
+            {<CurrentJobCard />}
           </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <JobSubNavBar/>
         </Grid.Row>
         <Grid.Row>
           <Grid.Column textAlign="center">

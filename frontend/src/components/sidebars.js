@@ -9,8 +9,10 @@ import {
   Segment,
 } from "semantic-ui-react";
 import { Link, useLocation, Switch, Route } from "react-router-dom";
-import MainContainer from "./mainContainer";
-import { useSelector } from "react-redux";
+import { MainContainer } from "./mainContainer";
+import { useDispatch, useSelector } from "react-redux";
+import { types } from "../reducers/types";
+import { filterJobsToSelected } from "../actions/actions";
 
 const SideBarSearch = (props) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -46,8 +48,9 @@ const ActiveJobsSidebar = (props) => {
           <Menu.Item
             key={item.job_id}
             name={item.job_id}
+            job_num={item.job_num}
             active={props.activeItem === "home"}
-            onClick={props.handleItemClick}
+            onClick={props.handleJobsSideBarClick}
           >
             <small>
               <b>{item.job_id}</b>
@@ -62,20 +65,24 @@ const ActiveJobsSidebar = (props) => {
     </Menu>
   );
 };
+
 export const MainSideBar = (props) => {
   const [activeItem, setActiveItem] = "home";
   const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const [filteredJobs, setFilteredJobs] = useState(
+    useSelector((state) => state.allJobsReducer.data)
+  );
+  const allJobs = useSelector((state) => state.allJobsReducer.data);
+  const isLoaded = useSelector((state) => state.allJobsReducer.loaded);
+  const selectedJob = useSelector((state) => state.selectedJobReducer.data);
 
-  const [filteredJobs, setFilteredJobs] = useState(useSelector(
-    (state) => state.allJobsReducer.data));
-  const jobs = useSelector((state) => state.allJobsReducer.data);
-  const isLoaded = useSelector(state => state.allJobsReducer.loaded)
   const handleSearch = (e, data) => {
     if (data.toString() === "") {
-      setFilteredJobs(jobs);
+      setFilteredJobs(allJobs);
     } else {
       setFilteredJobs(
-        jobs.filter((obj) => {
+        allJobs.filter((obj) => {
           let found = false;
           Object.keys(obj).forEach((key) => {
             if (typeof obj[key] === "object") {
@@ -106,6 +113,17 @@ export const MainSideBar = (props) => {
     }
   };
 
+  const handleJobsSideBarClick = (e, data) => {
+    const filtered_to_selected_job = allJobs.find(
+      obj => (
+        obj.job_num === data.job_num)
+    );
+    dispatch({
+      type: types.SELECTED_NEW_JOB,
+      data: filtered_to_selected_job,
+    });
+  };
+
   if (error) {
     return <div> Error: {error.message}</div>;
   } else {
@@ -125,6 +143,7 @@ export const MainSideBar = (props) => {
                 activeItem={activeItem}
                 isLoaded={isLoaded}
                 sideBarVisible={props.sideBarVisible}
+                handleJobsSideBarClick={handleJobsSideBarClick}
               />
               <div style={{ marginTop: "0rem" }}>
                 <Container className="container-top-padding">
@@ -149,6 +168,7 @@ const ChooseSideBar = (props) => {
         handleSearch={props.handleSearch}
         activeItem={props.activeItem}
         isLoaded={props.isLoaded}
+        handleJobsSideBarClick={props.handleJobsSideBarClick}
       />
     );
   } else {

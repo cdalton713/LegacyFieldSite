@@ -9,3 +9,12 @@ export const setAllJobs = (state = initialState, action) => {
       return state;
   }
 }
+
+export const setSelectedJob = (state = initialState, action) => {
+  switch (action.type) {
+    case types.SELECTED_NEW_JOB:
+      return { ...state, data: action.data };
+    default:
+      return state;
+  }
+};

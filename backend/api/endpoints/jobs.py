@@ -11,11 +11,16 @@ from flask_restx import Resource
 from backend.api import api
 from backend.api.serializers import job, all_jobs
 from sqlalchemy.orm import joinedload
+from backend.api.jwt import validate
 ns = api.namespace('Jobs', description='Operations related to jobs.')
 
 
+
 @ns.route('/')
+
 class JobCollection(Resource):
+
+    @validate
     @api.marshal_with(job)
     def get(self):
         jobs = db.session.query(Job).options(joinedload(Job.well)).all()

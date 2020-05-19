@@ -19,7 +19,7 @@ const JobNavBarMenus = (props) => {
         // active={activeItem === "fileUpload"}
         onClick={props.handleItemClick}
       >
-        <Link to={"/upload"}> File Upload </Link>
+        <Link to={"/upload"}> File Job </Link>
       </Menu.Item>
       <Dropdown text="Report Incident" pointing className="link item">
         <Dropdown.Menu>
@@ -50,7 +50,39 @@ export const NavBar = () => {
         handleItemClick={handleItemClick}
         handleSideBarVisible={handleSideBarVisibleChange}
       />
-      <MainSideBar sideBarVisible={sideBarVisible}/>
+      <MainSideBar sideBarVisible={sideBarVisible} />
     </div>
+  );
+};
+
+export const JobSubNavBar = () => {
+  const [activeItem, setActiveItem] = useState("");
+
+  const handleItemClick = (e, { name }) => setActiveItem(name);
+
+  return (
+    <Menu pointing secondary fluid={true}>
+      <Menu.Item
+        name={"upload"}
+        active={activeItem === "upload"}
+        onClick={handleItemClick}
+      >
+        File Uploads
+      </Menu.Item>
+      <Menu.Item
+        name  ={"incident"}
+        active={activeItem === "incident"}
+        onClick={handleItemClick}
+      >
+        Incidents
+      </Menu.Item>
+      <Menu.Item
+        name={"remoteOps_ddForm"}
+        active={activeItem === "remoteOps_ddForm"}
+        onClick={handleItemClick}
+      >
+        Remote Ops
+      </Menu.Item>
+    </Menu>
   );
 };

@@ -23,9 +23,11 @@ class User(db.Model):
     last_name = db.Column(db.String(64))
     email = db.Column(db.String(64), nullable=False, unique=True)
     name = db.Column(db.String(120), unique=True)
-    uploaded_files = db.relationship('Upload', backref='uploader', lazy=True)
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     logged_in = db.Column(db.Boolean())
+
+    # uploads = db.relationship('Upload', back_populates='user')
+    # token = db.relationship('OAuth2Token', back_populates='user_')
 
     def __ref__(self):
         return f"User('{self.username}', '{self.email}', '{self.image_file}'"
@@ -56,6 +58,8 @@ class OAuth2Token(db.Model):
     expires_at = db.Column(db.Integer)
     user = db.Column(db.Integer, db.ForeignKey(f'{SCHEMA_WEBSITE}.users.id'))
 
+    # user_ = db.relationship('User', back_populates='token')
+
     def to_token(self):
         return dict(
             access_token=self.access_token,
@@ -82,7 +86,7 @@ class Upload(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), db.ForeignKey(f'{SCHEMA_WEBSITE}.users.email'), nullable=False, unique=False)
     job_id = db.Column(db.String(10), db.ForeignKey(f'{SCHEMA_MAIN}.jobs.job_id'), index=True, unique=False)
-    job_num = db.Column(db.Integer, db.ForeignKey(f'{SCHEMA_MAIN}.jobs.job_num'))
+    job_num = db.Column(db.Integer)
     file_name = db.Column(db.String(256), index=True, unique=False)
     file_group = db.Column(db.String(256), index=False, unique=False)
     run_num = db.Column(db.Integer, default=-1)
@@ -93,8 +97,7 @@ class Upload(db.Model):
     action = db.Column(db.String(64))
     type = db.Column(db.String(32))
 
-    # job = db.relationship('Job', backref='upload')
-    # user = db.relationship('User', backref='upload')
+    jobs = db.relationship('Job', backref='upload')
 
     def __ref__(self):
         return f"File('{self.original_file_name}', '{self.date_uploaded}')"
@@ -140,7 +143,7 @@ class Well(db.Model):
     elevation = db.Column(db.SmallInteger)
     rkb = db.Column(db.Integer)
 
-    jobs = db.relationship('Job', back_populates='well')
+    jobs = db.relationship('Job', backref='well')
 
 
 class Job(db.Model):
@@ -162,7 +165,6 @@ class Job(db.Model):
     sp_start_date = db.Column(db.Date)
     sp_end_date = db.Column(db.Date)
 
-    well = db.relationship("Well", back_populates='jobs')
 
 
 class WellNameSchema(ma.SQLAlchemyAutoSchema):
@@ -195,9 +197,9 @@ class IncidentInvolving(db.Model):
     involving = db.Column(db.String(128))
 
     # well = db.relationship('Wells', backref='well')
-    job = db.relationship('Job', backref='job')
-    incident = db.relationship('Incident', backref='involving')
-    trs = db.relationship('MwdTrs', backref='trs', primaryjoin="IncidentInvolving.run_id == MwdTrs.mwd_trs_id")
+    # job = db.relationship('Job', backref='job')
+    # incident = db.relationship('Incident', backref='involving')
+    # trs = db.relationship('MwdTrs', backref='trs', primaryjoin="IncidentInvolving.run_id == MwdTrs.mwd_trs_id")
 
 
 class IncidentOccurred(db.Model):
@@ -213,10 +215,10 @@ class IncidentOccurred(db.Model):
     bha_id = db.Column(db.Integer)
     occurred = db.Column(db.String(128))
 
-    well = db.relationship('Well')
-    job = db.relationship('Job')
-    incident = db.relationship('Incident', backref='occurred')
-    trs = db.relationship('MwdTrs', primaryjoin='IncidentOccurred.run_id == MwdTrs.mwd_trs_id')
+    # well = db.relationship('Well')
+    # job = db.relationship('Job')
+    # incident = db.relationship('Incident', backref='occurred')
+    # trs = db.relationship('MwdTrs', primaryjoin='IncidentOccurred.run_id == MwdTrs.mwd_trs_id')
 
 
 class IncidentSymptom(db.Model):
@@ -232,9 +234,9 @@ class IncidentSymptom(db.Model):
     bha_id = db.Column(db.Integer)
     symptom = db.Column(db.String(128))
 
-    well = db.relationship('Well')
-    job = db.relationship('Job')
-    trs = db.relationship('MwdTrs', primaryjoin='IncidentSymptom.run_id == MwdTrs.mwd_trs_id')
+    # well = db.relationship('Well')
+    # job = db.relationship('Job')
+    # trs = db.relationship('MwdTrs', primaryjoin='IncidentSymptom.run_id == MwdTrs.mwd_trs_id')
     # symptomType = db.relationship('ChoicesIncidentSymptom', backref='symptom')
 
 
@@ -344,10 +346,10 @@ class IncidentComponent(db.Model):
     tool_serial = db.Column(db.String(64))
     ubho_type = db.Column(db.Text(10))
 
-    incident = db.relationship('Incident')
-    trs = db.relationship('MwdTrs', primaryjoin='IncidentComponent.run_id == MwdTrs.mwd_trs_id')
-    job = db.relationship('Job', primaryjoin='IncidentComponent.job_num == Job.job_num')
-    well = db.relationship('Job', primaryjoin='IncidentComponent.well_id == Job.well_id')
+    # incident = db.relationship('Incident')
+    # trs = db.relationship('MwdTrs', primaryjoin='IncidentComponent.run_id == MwdTrs.mwd_trs_id')
+    # job = db.relationship('Job', primaryjoin='IncidentComponent.job_num == Job.job_num')
+    # well = db.relationship('Job', primaryjoin='IncidentComponent.well_id == Job.well_id')
 
 
 class BhaMain(db.Model):
@@ -385,8 +387,8 @@ class BhaMain(db.Model):
     footage = db.Column(db.Integer)
     last_edit = db.Column(db.String(45))
 
-    job = db.relationship('Job', primaryjoin='BhaMain.job_num == Job.job_num')
-    well = db.relationship('Job', primaryjoin='BhaMain.well_id == Job.well_id')
+    # job = db.relationship('Job', primaryjoin='BhaMain.job_num == Job.job_num')
+    # well = db.relationship('Job', primaryjoin='BhaMain.well_id == Job.well_id')
 
 
 class MwdTrs(db.Model):
@@ -450,8 +452,8 @@ class MwdTrs(db.Model):
     RUN_COMMENT = db.Column(db.Text)
     RUN_POOH_REASON = db.Column(db.Text)
 
-    job = db.relationship('Job')
-    well = db.relationship('Well')
+    # job = db.relationship('Job')
+    # well = db.relationship('Well')
 
 
 from backend import login

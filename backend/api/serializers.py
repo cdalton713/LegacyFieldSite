@@ -1,26 +1,9 @@
 from flask_restx import fields
 from backend.api import api
 
-job = api.model('Job', {
-    'job_num': fields.Integer(readOnly=True),
-    'job_id': fields.String(readOnly=True),
-    'well_id': fields.Integer(attribute='well.well_id'),
-    'operator': fields.String(readOnly=True),
-    'rig': fields.String(readOnly=True),
-    'dd_job': fields.String(readOnly=True),
-    'mwd_job': fields.String(readOnly=True),
-    'mwd_vendor': fields.String(readOnly=True),
-    'status': fields.String(readOnly=True),
-    'office': fields.String(readOnly=True),
-    'sp_start_date': fields.Date(readOnly=True),
-    'sp_end_date': fields.Date(readOnly=True),
-
-})
 
 
-all_jobs = api.inherit('All Jobs', job, {
-    'items': fields.List(fields.Nested(job))
-})
+
 
 
 well = api.model('Well', {
@@ -42,5 +25,23 @@ well = api.model('Well', {
     'elevation': fields.Float(readOnly=True),
     'rkb': fields.Float(readOnly=True),
 })
+job = api.model('Job', {
+    'job_num': fields.Integer(readOnly=True),
+    'job_id': fields.String(readOnly=True),
+    'well_id': fields.Integer(attribute='well.well_id'),
+    'operator': fields.String(readOnly=True),
+    'rig': fields.String(readOnly=True),
+    'dd_job': fields.String(readOnly=True),
+    'mwd_job': fields.String(readOnly=True),
+    'mwd_vendor': fields.String(readOnly=True),
+    'status': fields.String(readOnly=True),
+    'office': fields.String(readOnly=True),
+    'sp_start_date': fields.Date(readOnly=True),
+    'sp_end_date': fields.Date(readOnly=True),
+    'well': fields.Nested(well)
 
+})
 
+all_jobs = api.inherit('All Jobs', job, {
+    'items': fields.List(fields.Nested(job))
+})

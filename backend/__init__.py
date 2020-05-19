@@ -1,15 +1,16 @@
 from flask import Flask, jsonify, has_request_context, request
 from flask_sqlalchemy import SQLAlchemy
 import os
-# from flask_login import LoginManager
+from flask_login import LoginManager
 from datetime import datetime
 from flask_marshmallow import Marshmallow
 from flask_session import Session
 from authlib.integrations.flask_client import OAuth
 from loginpass import Azure, create_flask_blueprint
 from backend.api import api
+from flask_cors import CORS
 
-# login = LoginManager()
+login = LoginManager()
 
 PKG_NAME = os.path.dirname(os.path.realpath(__file__)).split('/')[-1]
 
@@ -19,6 +20,7 @@ db = SQLAlchemy()
 ma = Marshmallow()
 sess = Session()
 oauth = OAuth()
+cors = CORS()
 
 from backend.api.auth import fetch_token, update_token
 
@@ -37,10 +39,10 @@ def create_app(app_name=PKG_NAME, **kwargs):
     # if kwargs.get('celery'):
     #     init_celery(kwargs.get('celery'), app)
 
-    # login.init_app(app)
+    login.init_app(app)
     db.init_app(app)
     ma.init_app(app)
-
+    cors.init_app(app, resources={r"/api/v1/*": {"origins": "http://localhost:*"}})
     # sess.init_app(app)
     # bootstrap.init_app(app)
     # mail.init_app(app)

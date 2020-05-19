@@ -1,13 +1,14 @@
-import {applyMiddleware, combineReducers, createStore} from "redux";
-import ActiveJob from "./selected_job";
-import { setAllJobs } from "./all_jobs";
-import { authorizationReducer} from "./authorization";
-import {composeWithDevTools} from "redux-devtools-extension";
+import { applyMiddleware, combineReducers, createStore } from "redux";
+import { setAllJobs } from "./jobs_reducer";
+// import { authorizationReducer } from "./authorization";
+import { composeWithDevTools } from "redux-devtools-extension";
+import { setSelectedJob } from "./jobs_reducer";
 import thunk from "redux-thunk";
+
 const rootReducer = combineReducers({
-  // activeJob: ActiveJob,
   allJobsReducer: setAllJobs,
-  authorizationReducer
+  selectedJobReducer: setSelectedJob,
+  // authorizationReducer,
 });
 
 export const rootStore = createStore(

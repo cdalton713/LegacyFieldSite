@@ -8,7 +8,9 @@ from backend.api import bp
 from backend import db, oauth
 from backend.models import OAuth2Token, User
 from flask import request
-
+import jwt
+import requests
+import sys
 
 @bp.route("/login")
 def login():
@@ -19,11 +21,32 @@ def login():
     return oauth.azure.authorize_redirect(redirect_uri)
 
 
+
 @bp.route('/.auth/login/aad/callback/')
 def authorize():
     try:
-        token = oauth.azure.authorize_access_token()
+        token = bytes(request.cookies.get('msal.idtoken'))
+        print(token)
+        client_id= 'ae109ae2-1dae-406e-ae47-158b6bb6c69c'
+        public_key, kid = get_public_key(token)
+
+        try:
+            jwt.decode(
+                token,
+                public_key,
+                algorithms='RS256',
+                audience=client_id,
+                leeway=timedelta(seconds=10)
+            )
+        except Exception as error:
+            print('key {} did not worked, error: {}'.format(kid, error))
+        print('Key worked!')
+
+
+        app_id = 'bX-.8.GYGTPv75-0s24WT35pSAocMRF4oG'
+        x = jwt.get_unverified_header(token)
         resp = oauth.azure.get('me')
+        update_token(name='azure-react', access_token=token)
         profile = resp.json()
         session['access_token'] = token
 
@@ -85,10 +108,11 @@ def fetch_token(name):
         name=name,
         user=current_user.get_id()
     ).first()
+
     return token.to_token()
 
 
-def update_token(name, token, refresh_token=None, access_token=None):
+def update_token(name, token=None, refresh_token=None, access_token=None):
     if refresh_token:
         item = OAuth2Token.query.filter_by(name=name, refresh_token=refresh_token).first()
     elif access_token:
@@ -97,7 +121,13 @@ def update_token(name, token, refresh_token=None, access_token=None):
         return
 
     # update old token
-    item.access_token = token['access_token']
-    item.refresh_token = token.get('refresh_token')
-    item.expires_at = token['expires_at']
+    if token:
+        item.access_token = token['access_token']
+        item.refresh_token = token.get('refresh_token')
+        item.expires_at = token['expires_at']
+    elif token is None:
+        if item is None:
+            item = OAuth2Token()
+            item.name = name
+        item.access_token = access_token
     db.session.commit()
