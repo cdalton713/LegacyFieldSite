@@ -19,14 +19,12 @@ const FilterSearchBar = (props) => {
   // const [filterText, setFilterText] = useState("");
 
   return (
-    <div style={{ display: "flex", alignItems: "center" }}>
       <Input
         placeholder="Search"
         icon="search"
         onChange={props.handleFilterSearchChange}
-        style={{marginRight:'0.5rem'}}
+        style={{ marginRight: "0.5rem" }}
       />
-    </div>
   );
 };
 
@@ -35,7 +33,7 @@ const DeleteSelectedButton = (props) => {
     <DeleteButton
       key="delete-btn"
       label={"Delete " + props.selectedRows.length + " Items"}
-      style={{marginLeft: "0.5rem", marginRight:'0.5rem'}}
+      style={{ marginLeft: "0.5rem", marginRight: "0.5rem" }}
     />
   );
 };
@@ -45,7 +43,7 @@ const DownloadSelectedButton = (props) => {
     <DownloadButton
       key="download-btn"
       label={"Download " + props.selectedRows.length + " Items"}
-      style={{marginLeft: "0.5rem", marginRight:'0.5rem'}}
+      style={{ marginLeft: "0.5rem", marginRight: "0.5rem" }}
     />
   );
 };
@@ -84,52 +82,56 @@ export const MyDataTable = (props) => {
   };
 
   return (
-    <div>
-      <Grid relaxed={true}>
-        <Grid.Row>
+    <Grid relaxed={true}>
+       <Grid.Column>
+      <Grid.Row verticalAlign={'middle'} padded={'vertically'}>
+  <div style={{ display: "flex", alignItems: "center" }}>
           <FilterSearchBar
             handleFilterSearchChange={handleFilterSearchChange}
           />
-          {(props.downloadButton && selectedRows.length > 0) ? (
+          {props.downloadButton && selectedRows.length > 0 ? (
             <DownloadSelectedButton selectedRows={selectedRows} />
           ) : null}
-          {(props.deleteButton && selectedRows.length > 0) ? (
+          {props.deleteButton && selectedRows.length > 0 ? (
             <DeleteSelectedButton selectedRows={selectedRows} />
           ) : null}
-        </Grid.Row>
-      </Grid>
-
-      <DataTable
-        title={props.title}
-        columns={props.columns}
-        data={filteredData}
-        defaultSortField={props.title}
-        selectableRows={props.selectableRows}
-        selectableRowsNoSelectAll={props.noSelectAll}
-        selectableRowsHighlight={props.selectableRowsHighlight}
-        selectableRowsVisibleOnly={props.selectableRowsVisibleOnly}
-        expandableRows={props.expandableRows}
-        expandOnRowClicked={props.expandOnRowClick}
-        pagination={props.pagination}
-        highlightOnHover={props.highlight}
-        striped={props.striped}
-        pointerOnHover={props.pointer}
-        dense={props.dense}
-        noTableHead={props.tableHead}
-        persistTableHead={props.persist}
-        progressPending={props.loading}
-        noHeader={props.noHeader}
-        subHeader={props.subHeader}
-        subHeaderAlign={props.subHeaderAlign}
-        fixedHeader={props.fixedHeader}
-        fixedHeaderScrollHeight="300px"
-        direction={props.directionValue}
-        selectableRowsComponent={Checkbox}
-        onSelectedRowsChange={handleRowSelected}
-        noContextMenu={props.noContextMenu}
-        keyField={props.keyField}
-      />
-    </div>
+</div>
+      </Grid.Row>
+      <Grid.Row>
+        <DataTable
+          title={props.title}
+          columns={props.columns}
+          data={filteredData}
+          defaultSortField={props.title}
+          selectableRows={props.selectableRows}
+          selectableRowsNoSelectAll={props.noSelectAll}
+          selectableRowsHighlight={props.selectableRowsHighlight}
+          selectableRowsVisibleOnly={props.selectableRowsVisibleOnly}
+          expandableRows={props.expandableRows}
+          expandOnRowClicked={props.expandOnRowClick}
+          onRowClicked={props.onRowClicked}
+          pagination={props.pagination}
+          highlightOnHover={props.highlight}
+          striped={props.striped}
+          pointerOnHover={props.pointer}
+          dense={props.dense}
+          noTableHead={props.tableHead}
+          persistTableHead={props.persist}
+          progressPending={props.loading}
+          noHeader={props.noHeader}
+          subHeader={props.subHeader}
+          subHeaderAlign={props.subHeaderAlign}
+          fixedHeader={props.fixedHeader}
+          fixedHeaderScrollHeight="300px"
+          direction={props.directionValue}
+          selectableRowsComponent={Checkbox}
+          onSelectedRowsChange={handleRowSelected}
+          noContextMenu={props.noContextMenu}
+          keyField={props.keyField}
+        />
+      </Grid.Row>
+          </Grid.Column>
+    </Grid>
   );
 };
 
@@ -161,4 +163,5 @@ MyDataTable.defaultProps = {
   keyField: "id",
   deleteButton: false,
   downloadButton: false,
+  onRowClicked: false,
 };

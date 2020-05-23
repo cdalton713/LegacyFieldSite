@@ -1,4 +1,5 @@
 import React, { useEffect, useState, createContext } from "react";
+import { useHistory } from "react-router-dom";
 import {
   Container,
   Input,
@@ -12,7 +13,7 @@ import { Link, useLocation, Switch, Route } from "react-router-dom";
 import { MainContainer } from "./mainContainer";
 import { useDispatch, useSelector } from "react-redux";
 import { types } from "../reducers/types";
-import { filterJobsToSelected } from "../actions/actions";
+import { fetchSelectedJob, filterJobsToSelected } from "../actions/jobs_actions";
 
 const SideBarSearch = (props) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,8 +37,9 @@ const SideBarSearch = (props) => {
 };
 
 const ActiveJobsSidebar = (props) => {
+  const darkMode = useSelector((state) => state.localSettings.darkMode);
   return (
-    <Menu vertical style={{ marginTop: "1rem" }}>
+    <Menu vertical style={{ marginTop: "1rem" }} inverted={darkMode}>
       <div>
         <SideBarSearch
           handleSearch={(e, data) => props.handleSearch(e, data.value)}
@@ -71,11 +73,12 @@ export const MainSideBar = (props) => {
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
   const [filteredJobs, setFilteredJobs] = useState(
-    useSelector((state) => state.allJobsReducer.data)
+    useSelector((state) => state.allJobs.data)
   );
-  const allJobs = useSelector((state) => state.allJobsReducer.data);
-  const isLoaded = useSelector((state) => state.allJobsReducer.loaded);
-  const selectedJob = useSelector((state) => state.selectedJobReducer.data);
+  const allJobs = useSelector((state) => state.allJobs.data);
+  const isLoaded = useSelector((state) => state.allJobs.loaded);
+  const selectedJob = useSelector((state) => state.selectedJob.data);
+  const history = useHistory();
 
   const handleSearch = (e, data) => {
     if (data.toString() === "") {
@@ -114,14 +117,8 @@ export const MainSideBar = (props) => {
   };
 
   const handleJobsSideBarClick = (e, data) => {
-    const filtered_to_selected_job = allJobs.find(
-      obj => (
-        obj.job_num === data.job_num)
-    );
-    dispatch({
-      type: types.SELECTED_NEW_JOB,
-      data: filtered_to_selected_job,
-    });
+    dispatch(fetchSelectedJob(data, allJobs));
+    history.push("/job/");
   };
 
   if (error) {
@@ -129,7 +126,7 @@ export const MainSideBar = (props) => {
   } else {
     return (
       <Switch>
-        <Route exact path={"/"}>
+        <Route exact path={['/', '/settings']}>
           <Container className="container-top-padding">
             <MainContainer />
           </Container>

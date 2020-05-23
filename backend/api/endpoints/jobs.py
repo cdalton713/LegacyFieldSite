@@ -9,15 +9,13 @@ from flask_login import login_required
 from flask import request
 from flask_restx import Resource
 from backend.api import api
-from backend.api.serializers import job, all_jobs
+from backend.api.serializers import job
 from sqlalchemy.orm import joinedload
 from backend.api.jwt import validate
 ns = api.namespace('Jobs', description='Operations related to jobs.')
 
 
-
 @ns.route('/')
-
 class JobCollection(Resource):
 
     @validate
@@ -31,6 +29,7 @@ class JobCollection(Resource):
 @api.response(404, 'Job not found.')
 class JobItem(Resource):
 
+    @validate
     @api.marshal_with(job)
     def get(self, job_num):
         return Job.query.filter(Job.job_num == job_num).one()

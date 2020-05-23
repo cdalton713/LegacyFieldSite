@@ -1,5 +1,6 @@
 import React, { useState, Component } from "react";
 import { Dropdown, Input, Select } from "semantic-ui-react";
+import {useSelector} from "react-redux";
 
 export const NumberInput = (props) => {
   return (
@@ -17,6 +18,7 @@ export const NumberInput = (props) => {
 };
 
 export const DropdownSelection = (props) => {
+    const darkMode = useSelector((state) => state.localSettings.darkMode);
   return (
     <div>
       <Dropdown

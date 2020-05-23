@@ -1,11 +1,6 @@
 from flask_restx import fields
 from backend.api import api
 
-
-
-
-
-
 well = api.model('Well', {
     'well_id': fields.Integer(readOnly=True),
     'api': fields.String(readOnly=True),
@@ -25,6 +20,7 @@ well = api.model('Well', {
     'elevation': fields.Float(readOnly=True),
     'rkb': fields.Float(readOnly=True),
 })
+
 job = api.model('Job', {
     'job_num': fields.Integer(readOnly=True),
     'job_id': fields.String(readOnly=True),
@@ -42,6 +38,21 @@ job = api.model('Job', {
 
 })
 
-all_jobs = api.inherit('All Jobs', job, {
-    'items': fields.List(fields.Nested(job))
+# TODO: This should not have an email column.  It should be linked to the Users table.  Will require local db or a
+#  website_dev2
+upload = api.model('Upload', {
+    'id': fields.Integer(readOnly=True),
+    'email': fields.String(readOnly=True),
+    'job_id': fields.String(readOnly=True),
+    'job_num': fields.Integer(readOnly=True),
+    'file_name': fields.String(readOnly=True),
+    'file_group': fields.String(readOnly=True),
+    'run_num': fields.Integer(readOnly=True),
+    'bha_num': fields.Integer(readOnly=True),
+    'file_path': fields.String(readOnly=True),
+    'datetime_uploaded': fields.DateTime(readOnly=True),
+    'uuid': fields.String(readOnly=True),
+    'action': fields.String(readOnly=True),
+    'type': fields.String(readOnly=True),
+
 })

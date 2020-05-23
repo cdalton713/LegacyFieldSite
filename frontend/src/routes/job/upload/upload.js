@@ -1,4 +1,7 @@
-import React, { useState, useCallback } from "react";
+import { DropdownSelection, NumberInput } from "../../../components/inputs";
+import FileUploader from "../../../components/fileUploader";
+import { MyDataTable } from "../../../components/datatable";
+import React, { useState } from "react";
 import {
   Header,
   Icon,
@@ -6,21 +9,16 @@ import {
   Menu,
   Container,
   Sidebar,
+  Dimmer,
   Button,
   Grid,
   Card,
   Divider,
   Segment,
 } from "semantic-ui-react";
-import FileUploader from "../../components/fileUploader";
-import FineUploaderAzure from "fine-uploader-wrappers/azure";
-import { NumberInput, DropdownSelection } from "../../components/inputs.js";
-import { MyDataTable } from "../../components/datatable.js";
-import { Select } from "@material-ui/core";
-import { useSelector, useDispatch } from "react-redux";
-import { CurrentJobCard } from "../../components/common";
-import {JobSubNavBar} from "../../components/navigation";
 
+import FineUploaderAzure from "fine-uploader-wrappers/azure";
+import {useSelector} from "react-redux";
 const uploader = new FineUploaderAzure({
   options: {
     request: {
@@ -34,81 +32,73 @@ const ddOrMwd = [
   { key: 2, text: "MWD", value: "MWD" },
 ];
 
-export const Job = (props) => {
+export const Uploader = (props) => {
   const [ddMwd, setDdMWd] = useState("");
   const [mwdRun, setMwdRun] = useState("");
   const [ddRun, setDdRun] = useState("");
   const [itemGroup, setItemGroup] = useState([]);
+  const darkMode = useSelector((state) => state.localSettings.darkMode);
 
+  // const handleStkChange = (e, { value }) => setStk(value);
   const handleDdMwdChange = (e, { value }) => setDdMWd(value);
   const handleMwdRunChange = (e, { value }) => setMwdRun(value);
   const handleDdRunChange = (e, { value }) => setDdRun(value);
 
   return (
-    <div className="container-all-padding">
-      <Grid stackable columns={3} centered textAlign="center">
-        <Grid.Row columns={1}>
-          <Grid.Column>
-            {<CurrentJobCard />}
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row>
-          <JobSubNavBar/>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column textAlign="center">
-            <DropdownSelection
-              label={"DD/MWD"}
-              options={ddOrMwd}
-              handleChange={handleDdMwdChange}
-            />
-          </Grid.Column>
-          <Grid.Column textAlign="center">
-            <NumberInput
-              label={"MWD Run"}
-              min={0}
-              handleChange={handleMwdRunChange}
-            />
-          </Grid.Column>
-          <Grid.Column textAlign="center">
-            <NumberInput
-              label={"DD Run"}
-              min={0}
-              handleChange={handleDdRunChange}
-            />
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row columns={1}>
-          <Grid.Column>
-            <br />
-            <FileUploader
-              uploader={uploader}
-              ddMwd={ddMwd || ""}
-              mwdRun={mwdRun || ""}
-              ddRun={ddRun || ""}
-            />
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row columns={1}>
-          <Grid.Column>
-            <Divider horizontal>Uploaded Files</Divider>
-            <MyDataTable
-              columns={columns}
-              data={data}
-              title=""
-              selectableRows
-              selectableRowsHighlight
-              dense={true}
-              noHeader
-              subHeader={false}
-              subHeaderAlign={"right"}
-              deleteButton={true}
-              downloadButton={true}
-            />
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
-    </div>
+    <Grid stackable={true} columns={3} centered={true} textAlign={'center'} inverted={darkMode}>
+      <Grid.Row>
+        <Grid.Column textAlign="center">
+          <DropdownSelection
+            label={"DD/MWD"}
+            options={ddOrMwd}
+            handleChange={handleDdMwdChange}
+          />
+        </Grid.Column>
+        <Grid.Column textAlign="center">
+          <NumberInput
+            label={"MWD Run"}
+            min={0}
+            handleChange={handleMwdRunChange}
+          />
+        </Grid.Column>
+        <Grid.Column textAlign="center">
+          <NumberInput
+            label={"DD Run"}
+            min={0}
+            handleChange={handleDdRunChange}
+          />
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row columns={1}>
+        <Grid.Column>
+          <br />
+          <FileUploader
+            uploader={uploader}
+            ddMwd={ddMwd || ""}
+            mwdRun={mwdRun || ""}
+            ddRun={ddRun || ""}
+          />
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row columns={1}>
+        <Grid.Column>
+          <Divider horizontal inverted={darkMode}>Uploaded Files</Divider>
+          <MyDataTable
+            columns={columns}
+            data={data}
+            title=""
+            selectableRows
+            selectableRowsHighlight
+            dense={true}
+            noHeader
+            subHeader={false}
+            subHeaderAlign={"right"}
+            deleteButton={true}
+            downloadButton={true}
+          />
+        </Grid.Column>
+      </Grid.Row>
+</Grid>
   );
 };
 
@@ -191,6 +181,7 @@ const columns = [
     searchable: true,
   },
 ];
+
 
 const data = [
   {

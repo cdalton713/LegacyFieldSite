@@ -1,88 +1,86 @@
 import React, { useState } from "react";
-import { Dropdown, Menu, Button, Segment } from "semantic-ui-react";
+import { Dropdown, Menu, Button, Segment, Icon } from "semantic-ui-react";
 import { ActiveJobsSidebar } from "./sidebars.js";
 import { MainSideBar } from "./sidebars";
 import { Link, useLocation, Switch, Route } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { types } from "../reducers/types";
+import { useHistory } from "react-router-dom";
+import { fetchTheme } from "../actions/settings_actions";
+import { authContext } from "../adalConfig";
 
+const menuItems = [
+  { id: "home", name: "Home", linkto: "/" },
+  { id: "jobs", name: "Jobs", linkto: "/job" },
+];
+
+const AdminButtons = (props) => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const handleThemeClick = () => {
+    dispatch(fetchTheme(props.darkMode));
+  };
+
+  return (
+    <Menu.Menu position={"right"}>
+      <Dropdown item icon={"setting"} floating>
+        <Dropdown.Menu>
+          <Dropdown.Item onClick={props.handleItemClick} linkto={"/settings"}>
+            Settings
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => authContext.logOut()}>
+            Log Out
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
+      <Menu.Item onClick={handleThemeClick}>
+        <Icon name={"moon"} />
+      </Menu.Item>
+    </Menu.Menu>
+  );
+};
 const JobNavBarMenus = (props) => {
   return (
-    <Menu className="no-margin">
-      <Menu.Item onClick={props.handleSideBarVisible}>
-        <i className="sidebar icon" />
-      </Menu.Item>
-      <Menu.Item name={"Home"} onClick={props.handleItemClick}>
-        <Link to={"/"}> Home</Link>
-      </Menu.Item>
-      <Menu.Item
-        name="File Upload"
-        // active={activeItem === "fileUpload"}
-        onClick={props.handleItemClick}
-      >
-        <Link to={"/upload"}> File Job </Link>
-      </Menu.Item>
-      <Dropdown text="Report Incident" pointing className="link item">
-        <Dropdown.Menu>
-          <Dropdown.Item>Create New</Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
-      <Dropdown text="Remote Ops" pointing className="link item">
-        <Dropdown.Menu>
-          <Dropdown.Item>Quick DD Form</Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
-    </Menu>
+    <div style={{ display: "flex" }}>
+      {menuItems.map((item) => (
+        <Menu.Item
+          id={item.id}
+          key={item.id}
+          name={item.name}
+          linkto={item.linkto}
+          active={props.activeItem === item.id}
+          onClick={props.handleItemClick}
+        />
+      ))}
+    </div>
   );
 };
 
 export const NavBar = () => {
   const [activeItem, setActiveItem] = useState(0);
   const [sideBarVisible, setSideBarVisible] = useState(true);
-
-  const handleItemClick = (e, { value }) => setActiveItem(value);
+  const darkMode = useSelector((state) => state.localSettings.darkMode);
+  const history = useHistory();
+  const handleItemClick = (e, data) => {
+    setActiveItem(data.id);
+    history.push(data.linkto);
+  };
 
   const handleSideBarVisibleChange = (e, { value }) => {
     setSideBarVisible(!sideBarVisible);
   };
   return (
-    <div>
-      <JobNavBarMenus
-        handleItemClick={handleItemClick}
-        handleSideBarVisible={handleSideBarVisibleChange}
-      />
+    <div style={{ background: darkMode ? "#262626" : "#ffffff" }}>
+      <Menu className="no-margin" inverted={darkMode}>
+        <Menu.Item onClick={handleSideBarVisibleChange}>
+          <i className="sidebar icon" />
+        </Menu.Item>
+        <JobNavBarMenus handleItemClick={handleItemClick} />
+        <AdminButtons darkMode={darkMode} handleItemClick={handleItemClick} />
+      </Menu>
+
       <MainSideBar sideBarVisible={sideBarVisible} />
     </div>
-  );
-};
-
-export const JobSubNavBar = () => {
-  const [activeItem, setActiveItem] = useState("");
-
-  const handleItemClick = (e, { name }) => setActiveItem(name);
-
-  return (
-    <Menu pointing secondary fluid={true}>
-      <Menu.Item
-        name={"upload"}
-        active={activeItem === "upload"}
-        onClick={handleItemClick}
-      >
-        File Uploads
-      </Menu.Item>
-      <Menu.Item
-        name  ={"incident"}
-        active={activeItem === "incident"}
-        onClick={handleItemClick}
-      >
-        Incidents
-      </Menu.Item>
-      <Menu.Item
-        name={"remoteOps_ddForm"}
-        active={activeItem === "remoteOps_ddForm"}
-        onClick={handleItemClick}
-      >
-        Remote Ops
-      </Menu.Item>
-    </Menu>
   );
 };

@@ -27,7 +27,17 @@ export const fetchAllJobs = () => {
   };
 };
 
-
+export const fetchSelectedJob = (data, allJobs) => {
+  const filtered_to_selected_job = allJobs.find(
+    (obj) => obj.job_num === data.job_num
+  );
+  return (dispatch) =>
+    dispatch({
+      type: types.SELECTED_NEW_JOB,
+      data: filtered_to_selected_job,
+      selected: true
+    });
+};
 // export const fetchAllJobs = async () => {
 //   const url = "/api/v1/Jobs";
 //   const token = getToken()

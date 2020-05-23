@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import {
   Header,
   Icon,
@@ -15,14 +16,22 @@ import {
   Segment,
 } from "semantic-ui-react";
 import { MyDataTable } from "../../components/datatable.js";
-import {Link} from "react-router-dom";
-import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSelectedJob } from "../../actions/jobs_actions";
 
 export const Home = () => {
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const allJobs = useSelector((state) => state.allJobs.data || []);
+  const darkMode = useSelector((state) => state.localSettings.darkMode);
+  const handleRowClick = (data) => {
+    dispatch(fetchSelectedJob(data, allJobs));
+    history.push("/job");
+  };
 
-  const allJobs = useSelector(state => state.allJobsReducer.data || [])
   // useEffect(() => {
   //   async function fetchData() {
   //     try {
@@ -39,29 +48,43 @@ export const Home = () => {
   // }, []);
   return (
     <div className="container-all-padding">
-      <Grid stackable columns={1} centered textAlign="center">
+      <Grid
+        stackable
+        columns={1}
+        centered
+        textAlign="center"
+        inverted={darkMode}
+      >
         <Grid.Row>
           <Grid.Column>
-            <Divider horizontal>All Jobs</Divider>
-            <Segment padded={isLoaded ? false : 'very'}>
-            {allJobs.length > 0 ? (
-              <MyDataTable
-                data={allJobs}
-                noHeader={true}
-                dense={true}
-                columns={columns}
-                title=""
-                selectableRows = {false}
-                selectableRowsHighlight = {false}
-                subHeader = {false}
-                subHeaderAlign={"right"}
-                keyField={"job_num"}
-                striped={true}
-                pagination={false}
-              />
-            ) : (
-                <Grid textAlign={'center'}><Loader inline active={true}>Loading</Loader></Grid>
-            )}
+            <Divider horizontal inverted={darkMode}>
+              All Jobs
+            </Divider>
+            <Segment padded={isLoaded ? false : "very"}>
+              {allJobs.length > 0 ? (
+                <MyDataTable
+                  data={allJobs}
+                  noHeader={true}
+                  dense={true}
+                  columns={columns}
+                  title=""
+                  selectableRows={false}
+                  selectableRowsHighlight={false}
+                  subHeader={false}
+                  subHeaderAlign={"right"}
+                  keyField={"job_num"}
+                  striped={true}
+                  pagination={false}
+                  highlight={true}
+                  onRowClicked={handleRowClick}
+                />
+              ) : (
+                <Grid textAlign={"center"}>
+                  <Loader inline active={true}>
+                    Loading
+                  </Loader>
+                </Grid>
+              )}
             </Segment>
           </Grid.Column>
         </Grid.Row>
@@ -78,7 +101,6 @@ const columns = [
     compact: true,
     searchable: true,
     omit: true,
-
   },
   {
     name: "Job ID",
@@ -86,7 +108,7 @@ const columns = [
     sortable: true,
     compact: true,
     searchable: true,
-    cell: row => <Link to="/upload">{row.job_id}</Link>
+    // cell: (row) => <Link to={"/job/" + row.job_id}>{row.job_id}</Link>,
   },
   {
     name: "Well Name",

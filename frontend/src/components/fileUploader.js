@@ -199,7 +199,7 @@ export default class FileUploader extends Component {
           disabled={false}
           trigger={
             <span>
-              <StartUploadButton disabled={false} />
+              <StartUploadButton disabled={false}  />
             </span>
           }
           position="top center"
