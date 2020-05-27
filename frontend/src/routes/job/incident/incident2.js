@@ -11,6 +11,7 @@ import {
   tempUserOption,
 } from "../../incident/options";
 import { DevTool } from "react-hook-form-devtools";
+import { DynamicDropdownText } from "../../../components/common";
 
 const validation_schema = yup.object().shape({
   personnel_mwd: yup
@@ -52,10 +53,11 @@ export const IncidentForm = () => {
     handleSubmit,
     control,
     setValue,
+    getValues,
     triggerValidation,
   } = useForm({ validationSchema: validation_schema });
 
-  const [bhaSerialRows, setBhaSerialRows] = useState([1]);
+  const [bhaSerialRows, setBhaSerialRows] = useState([{id: 1, dropdownValue: '', textValue: ''}]);
 
   useEffect(() => {
     register({ name: "personnel_mwd" }, { required: true });
@@ -73,6 +75,9 @@ export const IncidentForm = () => {
     register({ name: "yn_surface_serials" }, { required: true });
     register({ name: "yn_drilling_parameters" }, { required: true });
     register({ name: "yn_mud_parameters" }, { required: true });
+
+    register({ name: 'bha-component-dropdown-1' }, { required: true });
+    register({ name: 'bha-component-serial-1' }, { required: true });
   }, [register]);
 
   const onSubmit = (data, e) => {
@@ -80,69 +85,15 @@ export const IncidentForm = () => {
     alert(JSON.stringify(data));
   };
 
-  const handleNewBhaSerial = () => {
-    setBhaSerialRows([
-      ...bhaSerialRows,
-      bhaSerialRows[bhaSerialRows.length - 1] + 1,
-    ]);
+  const handleNewBhaSerial = (newId, dropdownPrefix, textPrefix) => {
+    setBhaSerialRows([...bhaSerialRows, newId]);
+    // registerDynamicDropdownText(dropdownPrefix, textPrefix);
   };
-  const BhaComponents = (props) => {
-    const children = [];
 
-    const BhaItemType = (props) => {
-      return (
-        <Form.Dropdown
-          key={"bha-component-dropdown-" + props.id}
-          options={optionBHAComponents}
-          name={"bha_component_dropdown"}
-          label={bhaSerialRows[0] === props.id ? "BHA Component" : null}
-          placeholder={"Motor"}
-          multiple={false}
-          search={true}
-          required
-          selection={true}
-          onChange={async (e, { name, value }) => {
-            setValue(name, value);
-            await triggerValidation(name);
-          }}
-          error={!!errors.incident_general}
-        />
-      );
-    };
-
-    const BhaItemSerial = (props) => {
-      return (
-        <Form.Input
-          key={"bha-component-serial-" + props.id}
-          name={"bha_component_serial"}
-          label={bhaSerialRows[0] === props.id ? "Serial No." : null}
-          onChange={async (e, { name, value }) => {
-            setValue(name, value);
-            await triggerValidation(name);
-          }}
-          error={!!errors.incident_general}
-        />
-      );
-    };
-
-    bhaSerialRows.forEach((row) => {
-      children.push(
-        <Form.Group>
-          <BhaItemType id={row} />
-          <BhaItemSerial id={row} />
-        </Form.Group>
-      );
-    });
-
-    return (
-      <>
-        {children}
-        <Form.Button onClick={props.handleNewBhaSerial}>
-          Add Another
-        </Form.Button>
-      </>
-    );
-  };
+  // const registerDynamicDropdownText = (dropdownPrefix, textPrefix) => {
+  //   register({ name: dropdownPrefix }, { required: true });
+  //   register({ name: textPrefix }, { required: true });
+  // };
 
   return (
     <>
@@ -348,10 +299,25 @@ export const IncidentForm = () => {
         </Segment>
         <Segment textAlign={"left"}>{/*TODO: MWD TOOL SERIALS*/}</Segment>
         <Segment textAlign={"left"}>
-          <BhaComponents
-            bhaSerialRows={bhaSerialRows}
-            handleNewBhaSerial={handleNewBhaSerial}
+          <DynamicDropdownText
+            dropdownPrefix={"bha-component-dropdown"}
+            rows={bhaSerialRows}
+            setRows={setBhaSerialRows}
+            handleNewRow={handleNewBhaSerial}
+            options={optionBHAComponents}
+            dropdownLabel={"BHA Component"}
+            dropdownPlaceholder={"Motor"}
+            textLabel={"Serial No."}
+            textPrefix={"bha-component-serial"}
+            setValue={setValue}
+            triggerValidation={triggerValidation}
+            errors={errors}
+            // registerDynamicDropdownText={registerDynamicDropdownText}
           />
+          {/*  <BhaComponents*/}
+          {/*  bhaSerialRows={bhaSerialRows}*/}
+          {/*  handleNewBhaSerial={handleNewBhaSerial}*/}
+          {/*/>*/}
         </Segment>
         <Button
           type="submit"
