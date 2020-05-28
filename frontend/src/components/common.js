@@ -117,9 +117,6 @@ export const LoadingView = () => {
 };
 
 export const DynamicDropdownText = (props) => {
-  const children = [];
-  const [internalValues, setInternalValues] = useState([{ id: 1, value: "" }]);
-
   // useEffect(() => {
   //   const id = props.rows[props.rows.length - 1];
   //   props.registerDynamicDropdownText(
@@ -129,98 +126,117 @@ export const DynamicDropdownText = (props) => {
   // });
 
   const DropdownItem = (props) => {
-    const dropdownKey = props.dropdownPrefix + "-" + props.id;
     return (
       <Form.Dropdown
-        key={dropdownKey}
+        key={props.id}
+        id={props.id}
+        name={props.id}
+        value={props.value}
         options={props.options}
-        name={dropdownKey}
-        label={props.rows[0] === props.id ? props.dropdownLabel : null}
-        placeholder={props.dropdownPlaceholder}
+        label={props.label}
+        // label={props.rows[0].id === props.id ? props.dropdownLabel : null}
+        placeholder={props.placeholder}
         multiple={false}
         search={true}
         required
         selection={true}
-        value={props.value}
-        onBlur={async (e, { name, value }) => {
-          let newRows = [...props.rows];
-          let index = props.rows.findIndex((value) => value.id === props.id);
-          newRows[index].dropdownValue = value;
-          props.setRows(newRows);
+        onChange={(e, { name, value }) => {
+          // let newRows = [...props.rows];
+          // let index = props.rows.findIndex((value) => value.id === props.id);
+          // newRows[index].dropdownValue = value;
+          // props.setRows(newRows);
+          let items = [...props.rows];
+          items[props.idx]["dropdownValue"] = value;
+          props.handleChange(items);
           props.setValue(name, value);
-          await props.triggerValidation(name);
+          props.triggerValidation(name);
         }}
-        error={!!props.errors[props.dropdownPrefix + "-" + props.id]}
+        error={!!props.errors[props.id]}
       />
     );
   };
 
   const TextItem = (props) => {
-    const textKey = props.textPrefix + "-" + props.id;
     return (
-      <Form.Input
-        key={textKey}
-        name={textKey}
+      <Form.Dropdown
+        key={props.id}
+        id={props.id}
+        name={props.id}
         value={props.value}
-        label={props.rows[0] === props.id ? props.textLabel : null}
-        onBlur={async (e, { name, value }) => {
-          let newRows = [...props.rows];
-          let index = props.rows.findIndex((value) => value.id === props.id);
-          newRows[index].textValue = value;
-          props.setRows(newRows);
+        label={props.label}
+        options={props.options}
+        allowAdditions={true}
+        search={true}
+        selection={true}
+
+        // label={props.rows[0].id === props.id ? props.textLabel : null}
+        placeholder={props.placeholder}
+        onAddItem={(e, {name, value}) => {
+          let items = [...props.rows];
+          items[props.idx]["textValue"] = value;
+
+          props.setOptions({text: value, value}, ...props.options)
+          props.handleChange(items);
           props.setValue(name, value);
-          await props.triggerValidation(name);
+          props.triggerValidation(name);
         }}
-        error={!!props.errors[props.textPrefix + "-" + props.id]}
+        onChange={(e, { name, value }) => {
+          // let newRows = [...props.rows];
+          // let index = props.rows.findIndex((value) => value.id === props.id);
+          // newRows[index].textValue = value;
+          // props.setRows(newRows);
+          let items = [...props.rows];
+          items[props.idx]["textValue"] = value;
+          props.handleChange(items);
+          props.setValue(name, value);
+          props.triggerValidation(name);
+        }}
+        error={!!props.errors[props.id]}
       />
     );
   };
 
-  props.rows.forEach((row) => {
-    children.push(
-      <Form.Group>
-        <DropdownItem
-          id={row.id}
-          value={row.dropdownValue}
-          rows={props.rows}
-          dropdownPlaceholder={props.dropdownPlaceholder}
-          dropdownPrefix={props.dropdownPrefix}
-          dropdownLabel={props.dropdownLabel}
-          errors={props.errors}
-          options={props.options}
-          setValue={props.setValue}
-          triggerValidation={props.triggerValidation}
-          setRows={props.setRows}
-        />
-        <TextItem
-          id={row.id}
-          value={row.textValue}
-          rows={props.rows}
-          textPrefix={props.textPrefix}
-          textLabel={props.textLabel}
-          errors={props.errors}
-          setValue={props.setValue}
-          triggerValidation={props.triggerValidation}
-          setRows={props.setRows}
-        />
-      </Form.Group>
-    );
-  });
-
   return (
     <>
-      {children}
-      <Form.Button
-        onClick={(e) => {
-          props.handleNewRow({
-            id: props.rows[props.rows.length - 1] + 1,
-            dropdownValue: "",
-            textValue: "",
-          });
-        }}
-      >
-        Add Another
-      </Form.Button>
+      {props.rows.map((row, idx) => {
+        const dropdownID = props.dropdownPrefix + "-" + idx;
+        const textID = props.textPrefix + "-" + idx;
+        const groupID =
+          props.dropdownPrefix + "-" + props.textPrefix + "-" + idx;
+        return (
+          <Form.Group key={groupID} id={groupID}>
+            <DropdownItem
+              id={dropdownID}
+              idx={idx}
+              name={dropdownID}
+              value={props.rows[idx].dropdownValue}
+              label={props.dropdownLabel}
+              placeholder={props.dropdownPlaceholder}
+              options={props.dropdownOptions}
+              rows={props.rows}
+              setValue={props.setValue}
+              errors={props.errors}
+              triggerValidation={props.triggerValidation}
+              handleChange={props.handleChange}
+            />
+            <TextItem
+              id={textID}
+              idx={idx}
+              name={textID}
+              value={props.rows[idx].textValue}
+              label={props.textLabel}
+              placeholder={props.textPlaceholder}
+              options={props.textOptions}
+              rows={props.rows}
+              setValue={props.setValue}
+              setOptions={props.setOptions}
+              errors={props.errors}
+              triggerValidation={props.triggerValidation}
+              handleChange={props.handleChange}
+            />
+          </Form.Group>
+        );
+      })}
     </>
   );
 };
